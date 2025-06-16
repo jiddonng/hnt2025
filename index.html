@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>haveanicetrip2025</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gothic+A1:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #141414;
+      overflow: hidden;
+      opacity: 1;
+      transition: opacity 1s ease;
+      font-family: 'Gothic A1', sans-serif;
+    }
+
+    #lyric-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #141414;
+    }
+
+    .lyric-box {
+      position: absolute;
+      background: #ffffff;
+      color: #555555;
+      padding: 5px 10px;
+      font-size: 18px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      pointer-events: auto;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      font-weight: 500;
+    }
+
+    .lyric-box.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #floating-cover {
+      position: fixed;
+      width: 100px;
+      height: 100px;
+      pointer-events: none;
+      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      opacity: 0;
+      display: none;
+      transition: opacity 0.2s ease;
+    }
+
+    #floating-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="lyric-container"></div>
+  <div id="floating-cover"><img src="" alt="앨범 커버" /></div>
+
+  <script>
+    const lyrics = [
+      { text: "Hey there, bud, how’d it go last night?", img: "images/cover1.jpg" },
+      { text: "햇살 같은 그대가 가끔 와주면 좋겠어요", img: "images/cover2.jpeg" },
+      { text: "세상 속에 문이 네게 닫힐 때 내 손을 바칠게", img: "images/cover3.jpg" },
+      { text: "그 누구도 모르는 짙은 향기를 담은", img: "images/cover4.jpeg" },
+      { text: "Now you’re never gonna quit it", img: "images/cover5.jpg" },
+      { text: "Look at the king your heart contains", img: "images/cover6.jpeg" },
+      { text: "젊은 날의 우리로 오 영원히 남아 있어줘", img: "images/cover7.jpg" },
+      { text: "You have to love this thing, man", img: "images/cover8.jpg" },
+      { text: "Honey bee was it your buzzin' I adored", img: "images/cover9.jpg" },
+      { text: "나란히 나란히 걸어 다닐 걸 그랬어", img: "images/cover10.jpeg" },
+      { text: "우리 왜 이러는지 같은 말을 해도 왜 이렇게 전혀 다른 우주의 값을 얘기해", img: "images/cover11.jpg" }
+    ];
+
+    let currentIndex = 0;
+    let lastShowTime = 0;
+    const THROTTLE_MS = 500;
+
+    const container = document.getElementById("lyric-container");
+    const floatingCover = document.getElementById("floating-cover");
+    const floatingImg = floatingCover.querySelector("img");
+
+    let coverVisible = false;
+
+    document.addEventListener("mousemove", (e) => {
+      // 이미지가 보이고 있으면 마우스 따라 움직이게
+      if (coverVisible) {
+        floatingCover.style.left = e.clientX + 15 + "px";
+        floatingCover.style.top = e.clientY + 15 + "px";
+      }
+
+      // 다음 가사 표시
+      if (currentIndex >= lyrics.length) return;
+      const now = Date.now();
+      if (now - lastShowTime < THROTTLE_MS) return;
+
+      showNextLyric(e.clientX, e.clientY);
+      lastShowTime = now;
+      currentIndex += 1;
+    });
+
+    function showNextLyric(mouseX, mouseY) {
+      // 이전 cover 숨기기
+      floatingCover.style.opacity = "0";
+      floatingCover.style.display = "none";
+      coverVisible = false;
+
+      const { text, img } = lyrics[currentIndex];
+
+      const box = document.createElement("div");
+      box.classList.add("lyric-box");
+      box.innerText = text;
+
+      const offsetX = 10;
+      const offsetY = 10;
+      box.style.left = (mouseX + offsetX) + "px";
+      box.style.top  = (mouseY + offsetY) + "px";
+
+      container.appendChild(box);
+
+      requestAnimationFrame(() => {
+        box.classList.add("show");
+      });
+
+      // cover 이미지 띄우기
+      floatingImg.src = img;
+      floatingCover.style.left = mouseX + 15 + "px";
+      floatingCover.style.top  = mouseY + 15 + "px";
+      floatingCover.style.opacity = "1";
+      floatingCover.style.display = "block";
+      coverVisible = true;
+    }
+
+    // 5초 후 페이지 이동
+    setTimeout(() => {
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        window.location.href = 'hnt2025.html';
+      }, 1000);
+    }, 5000);
+
+  </script>
+</body>
+</html>
